@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Source: models/user.js</title>
+    <title>JSDoc: Source: graphql/logic/projects.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,7 +17,7 @@
 
 <div id="main">
 
-    <h1 class="page-title">Source: models/user.js</h1>
+    <h1 class="page-title">Source: graphql/logic/projects.js</h1>
 
     
 
@@ -26,111 +26,211 @@
     
     <section>
         <article>
-            <pre class="prettyprint source linenums"><code>import crypto from 'crypto';
-import shortid from 'shortid';
-import mongoose from 'mongoose';
-import timestamp from 'mongoose-timestamp';
-import passportLocalMongoose from 'passport-local-mongoose';
+            <pre class="prettyprint source linenums"><code>import _s from 'underscore.string';
 
-const Schema = mongoose.Schema;
+// services
+import PermissionsService from './PermissionsService';
+
+// models
+import Project from '../../models/project';
+
+// errors
+import { AuthenticationError, PermissionError, ArgumentError } from '../errors';
+
 
 /**
- * User base schema
- * @type {Schema}
+ * Logic-layer service for dealing with projects
  */
-const UserSchema = new Schema({
-  _id: {
-    type: String,
-    default: shortid.generate
-  },
-  username: String,
-  avatar: String,
-  name: String,
-  email: String,
-  bio: String,
-  twitter: String,
-  facebook: String,
-  password: String,
-  oauthIds: [{
-    network: String,
-    id: String,
-  }],
-  verified: {
-    type: Boolean,
-    defualt: false,
-  },
-  resetPasswordToken: String,
-  resetPasswordExpires: Date
-});
 
-
-// add password hash and salt
-UserSchema.plugin(passportLocalMongoose);
-
-// add timestamp (createdAt, updatedAt)
-UserSchema.plugin(timestamp);
-
-// Statics
-// // this method is needed for dataloader to work
-UserSchema.statics.findById = function findById(_id, cb) {
-
-  return User.findOne({ _id }, {}, cb); // eslint-disable-line
-};
-
-UserSchema.statics.findByOAuth = function findByOAuth(id, network, cb) {
-  return User.findOne({ oauthIds: { $elemMatch: { network, id } } }, cb); // eslint-disable-line
-};
-
-UserSchema.statics.createOAuth = async function createOAuth({ id, network }, cb) {
-  const user = await User.findByOAuth(id, network); // eslint-disable-line
-  if (user) return null;
-  return User.create({ oauthIds: [{ id, network }] }, cb); // eslint-disable-line
-};
-
-UserSchema.statics.generatePasswordResetToken = async function generatePasswordResetToken(username) {
-  try {
-    const buf = await crypto.randomBytes(48);
-    const token = buf.toString('hex');
-    return User.findOneAndUpdate({ username }, { // eslint-disable-line
-      resetPasswordToken: token,
-      resetPasswordExpires: Date.now() + 3600000, // 1 hour
-    });
-  } catch (err) {
-    throw err;
+export default class ProjectService extends PermissionsService {
+  /**
+   * Count projects
+   * @returns {number} count of projects
+   */
+  async count() {
+    return await Project.count();
   }
-};
 
-UserSchema.statics.resetPassword = async function resetPassword(resetPasswordToken, newPassword) {
-  try {
-    const user = await User.findOne({ resetPasswordToken, resetPasswordExpires: { $gt: Date.now() } }); // eslint-disable-line
-    if (user) {
-      // second value must be passed - workaround for model bug
-      return new Promise((resolve, reject) => {
-        user.setPassword(newPassword, (err, userWithNewPassword) => {
-          if (err) reject(err);
-          userWithNewPassword.save((saveErr) => {
-            if (saveErr) reject(saveErr);
-            resolve(userWithNewPassword);
-          });
-        });
-      });
+  /**
+   * Get a list of projects
+   * @param {string} textsearch
+   * @param {number} offset
+   * @param {number} limit
+   * @returns {Object[]} array of projects
+   */
+  async getProjects({ offset, limit, textsearch }) {
+    const args = {};
+
+    if (textsearch) {
+      args.title = /.*${textsearch}.*/;
     }
-    return null;
 
-  } catch (err) {
-    throw err;
+    return await Project.find(args)
+      .sort({ slug: 1})
+      .skip(offset)
+      .limit(limit);
   }
-};
 
+  /**
+   * Get a list of projects that a user belongs to
+   * @param {number} offset
+   * @param {number} limit
+   * @returns {Object[]} array of projects
+   */
+  async getUserProjects({ offset, limit }) {
+    const args = {
+      'users.userId': this.userId,
+    };
 
-/**
- * User mongoose model
- * @type {Object}
- */
-const User = mongoose.model('User', UserSchema);
+    return await Project.find(args)
+      .sort({ slug: 1})
+      .skip(offset)
+      .limit(limit);
+  }
 
-export default User;
-export { UserSchema };
+  /**
+   * Get project
+   * @param {number} _id - id of project
+   * @param {string} slug - slug of project
+   * @param {string} hostname - hostname of project
+   * @returns {Object[]} array of projects
+   */
+  async getProject({ _id, slug, hostname }) {
+    const where = {};
+
+    if (!_id &amp;&amp; !slug &amp;&amp; !hostname) {
+      return null;
+    }
+
+    if (_id) {
+      where._id = _id;
+    }
+
+    if (slug) {
+      where.slug = slug;
+    }
+
+    if (hostname) {
+      where.hostname = hostname;
+    }
+
+    return await Project.findOne(where);
+  }
+
+  /**
+   * Create a new project
+   * @param {Object} project - project candidate
+   * @returns {Object} created project
+   */
+  async create(project) {
+    // if user is not logged in
+    if (!this.userId) throw new AuthenticationError();
+
+    // Initiate new project
+    project.slug = _s.slugify(project.title);
+    const newProject = new Project(project);
+
+    // Add user to project
+    const projectUser = {
+      userId: this.userId,
+      role: 'admin',
+    };
+    newProject.users.push(projectUser);
+
+    // save new project
+    return await newProject.save();
+  }
+
+  /**
+   * Update a project
+   * @param {Object} project - project candidate
+   * @returns {Object} updated project
+   */
+  async update(project) {
+    // if user is not logged in
+    if (!this.userId) throw new AuthenticationError();
+
+    // Initiate project
+    const foundProject = await Project.findById(project._id);
+    if (!foundProject) throw new ArgumentError({ data: { field: 'project._id' } });
+
+    // validate permissions
+    const userIsAdmin = this.userIsProjectAdmin(foundProject);
+    if (!userIsAdmin) throw new PermissionError();
+
+    // set slug
+    project.slug = _s.slugify(project.title);
+
+    // perform action
+    const projectUpdateResult = await Project.update({ _id: project._id }, { $set: project });
+
+    // TODO
+    // error handling
+
+    // return updated project
+    const updatedProject = await Project.findById(project._id);
+    // don't return await
+    return updatedProject;
+  }
+
+  /**
+   * Remove a project
+   * @param {string} _id - id of project to Remove
+   * @param {string} hostname - hostname of project to check permissions against
+   * @returns {boolean} remove result
+   */
+  async remove(_id, hostname) {
+    // if user is not logged in
+    if (!this.userId) throw new AuthenticationError();
+
+    // initiate project
+    const foundProject = await Project.findOne({ hostname, });
+    if (!foundProject) throw new ArgumentError({ data: { field: 'projectId' } });
+
+    // validate permissions
+    const userIsAdmin = this.userIsProjectAdmin(foundProject);
+    if (!userIsAdmin) throw new PermissionError();
+
+    // perform action
+    const result = await Project.remove({ _id });
+
+    // TODO
+    // error handling
+
+    // respond with result
+    return {
+      result,
+    };
+  }
+
+  /**
+   * Get project collections
+   * @param {string} projectId - id of project
+   * @param {number} limit - mongoose orm limit
+   * @param {number} offset - mongoose orm offset
+   * @returns {Object[]} collections for project
+   */
+  async getCollections({ projectId, limit, offset }) {
+    // TODO:
+    // get paginated collections by project Id
+    return Collection.findByProjectId(project._id);
+  }
+
+  /**
+   * Get project activity feed
+   * @param {number} projectId - project id for activity
+   * @param {number} limit - mongoose orm limit
+   * @param {number} offset - mongoose orm offset
+   * @returns {Object[]} activity feed items
+   */
+  async getActivityFeed({ projectId, limit, offset }) {
+
+    // TODO:
+    // get activity feed from collections, items, articles, texts, and comments
+
+    return [];
+  }
+}
 </code></pre>
         </article>
     </section>

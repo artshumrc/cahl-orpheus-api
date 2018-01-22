@@ -182,7 +182,7 @@ export default class ItemService extends PermissionsService {
 	 * Create a new item
 	 * @param {Object} item - item candidate
 	 * @param {string} hostname - hostname of item project
-	 * @param {[Object]} files - files for the object
+	 * @param {Object[]} files - files for the object
 	 * @returns {Object} created item
 	 */
 	async create(hostname, item, files) {

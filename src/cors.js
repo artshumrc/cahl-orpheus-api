@@ -3,7 +3,7 @@ import cors from 'cors';
 
 export default function corsSetup(app) {
 
-	const whitelist = ['http://test.orphe.us', 'http://orphe.us', 'http://test.orpheus.local:3000', 'http://orpheus.local:3000', 'http://localhost:3000'];
+	const whitelist = ['http://hartnautical.orphe.us', 'http://orphe.us', 'http://hartnautical.orpheus.local:3000', 'http://orpheus.local:3000', 'http://localhost:3000'];
 
 	if (process.env.NODE_ENV === 'development') {
 		whitelist.push(process.env.CLIENT_SERVER);
@@ -26,7 +26,7 @@ export default function corsSetup(app) {
 			} else {
 				// callback(new Error('Not allowed by CORS'));
 			}
-			
+
 			callback(null, true);
 		},
 		credentials: true,

@@ -4,5 +4,5 @@
     "transform-async-to-generator",
     ["transform-object-rest-spread", { "useBuiltIns": true }]
   ],
-  "presets": ["es2015", "flow"]
+  "presets": ["es2015", "stage-0", "flow"]
 }

@@ -43,6 +43,10 @@ import authenticationRouter from './authentication/routes';
 // services
 import ManifestService from './graphql/logic/manifests';
 
+// Health Check
+import healthCheck from './health-check';
+
+
 // environment variables setup
 dotenvSetup();
 
@@ -105,7 +109,7 @@ app.post('/manifests', async (req, res) => {
 	});
 });
 
-
+app.use('/', healthCheck);
 
 function listen() {
 	app.listen(app.get('port'), () => {

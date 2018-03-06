@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cahl-orpheus-ingress
+spec:
+  tls:
+  - secretName: orpheus-certchain
+  rules:
+  - host: api.cahl.orphe.us
+    http:
+      paths:
+      - backend:
+          serviceName: cahl-orpheus-service
+          servicePort: 3001
+  backend:
+    serviceName: cahl-orpheus-service
+    servicePort: 3000

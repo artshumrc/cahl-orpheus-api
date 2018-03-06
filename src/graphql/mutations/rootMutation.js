@@ -7,6 +7,12 @@ import itemMutationFields from './items';
 import textMutationFields from './texts';
 import userMutationFields from './users';
 
+
+// Application-specific queries
+import commentMutationFields from '../../modules/cahl/graphql/mutations/comments';
+import storyMutationFields from '../../modules/cahl/graphql/mutations/stories';
+
+
 /**
  * Root mutations
  * @type {GraphQLObjectType}
@@ -15,11 +21,14 @@ const RootMutations = new GraphQLObjectType({
 	name: 'RootMutationType',
 	description: 'Root mutation object type',
 	fields: {
-		...projectMutationFields,
-		...articleMutationFields,
-		...collectionMutationFields,
-		...itemMutationFields,
-		...textMutationFields,
+		...commentMutationFields,
+		...storyMutationFields,
+
+		// ...projectMutationFields,
+		// ...articleMutationFields,
+		// ...collectionMutationFields,
+		// ...itemMutationFields,
+		// ...textMutationFields,
 		...userMutationFields,
 	},
 });

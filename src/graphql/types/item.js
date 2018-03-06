@@ -6,13 +6,13 @@ import createType from 'mongoose-schema-to-graphql';
 // types
 import FileType, { FileInputType } from './file';
 import MetadataType, { MetadataInputType } from './metadata';
-import CommentType from './comment';
+// import CommentType from './comment';
 import ManifestType from './manifest';
 
 // logic
 import ItemService from '../logic/items';
 import FileService from '../logic/files';
-import CommentService from '../logic/comments';
+// import CommentService from '../logic/comments';
 import ManifestService from '../logic/manifests';
 
 // models
@@ -42,6 +42,7 @@ const config = {
 				return fileService.count({ itemId: item._id });
 			}
 		},
+		/*
 		comment: {
 			type: CommentType,
 			description: 'Get a comment ',
@@ -88,6 +89,7 @@ const config = {
 				return commentService.count({ itemId: parent._id });
 			}
 		},
+		*/
 		metadata: {
 			type: new GraphQLList(MetadataType),
 			description: 'Get item metadata',

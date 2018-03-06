@@ -1,88 +1,89 @@
 {
-	"kind":"Deployment",
-	"apiVersion":"extensions/v1beta1",
-	"metadata": {
-		"name":"orpheus-app-dep",
-		"labels": {
-			"name":"orpheus-app-dep"
-		}
-	},
-	"spec":{
-		"replicas": 1,
-		"template": {
-			"metadata": {
-				"labels": {
-					"name":"orpheus-app-pod"
-				}
-			},
-			"spec": {
-				"containers": [
-					{
-						"name": "orpheus-app-cont",
-						"image": "us.gcr.io/archimedes-01201/orpheus-app:test",
-						"ports": [
-							{
-								"name": "http-server",
-								"containerPort": 3001
-							}
-						],
-						"env": [
-							{
-								"name": "NODE_ENV",
-								"value": "production" 
-							},
-							{
-								"name": "SESSION_SECRET",
-								"valueFrom": {
-									"secretKeyRef": {
-										"name": "session-secret",
-									}
-								}
-							},
-							{
-								"name": "JWT_SECRET",
-								"valueFrom": {
-									"secretKeyRef": {
-										"name": "jwt-secret",
-									}
-								}
-							},
-							{
-								"name": "DB_HOST",
-								"value": "db.orphe.us"
-							},
-							{
-								"name": "DB_NAME",
-								"valueFrom": "orpheus"
-							},
-							{
-								"name": "CLIENT_SERVER",
-								"value": "orphe.us"
-							},
-							{
-								"name": "WS_SERVER_PORT",
-								"value": 80
-							},
-							{
-								"name": "WS_SERVER_HOST",
-								"value": "ws.orphe.us"
-							},
-							{
-								"name": "WS_SERVER_URI",
-								"value": "subscriptions"
-							},
-							{
-								"name": "DEFAULT_LANGUAGE",
-								"value": "en"
-							},
-							{
-								"name": "AWS_BUCKET",
-								"value": "iiif-orpheus"
-							}
-						]
-					}
-				]
-			}
-		}
-	}
+  "kind":"Deployment",
+  "apiVersion":"extensions/v1beta1",
+  "metadata": {
+    "name":"cahl-orpheus-deployment",
+    "labels": {
+      "name":"cahl-orpheus-deployment"
+    }
+  },
+  "spec":{
+    "replicas": 1,
+    "template": {
+      "metadata": {
+        "labels": {
+          "name":"cahl-orpheus-pod"
+        }
+      },
+      "spec": {
+        "containers": [
+          {
+            "name": "cahl-orpheus-app",
+            "image": "us.gcr.io/archimedes-01201/cahl-orpheus:NEW_IMAGE_TAG",
+            "env": [
+              {
+                "name": "NODE_ENV",
+                "value": "production"
+              },
+              {
+                "name": "SESSION_SECRET",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "secrets",
+                    "key": "session"
+                  }
+                }
+              },
+              {
+                "name": "JWT_SECRET",
+                "valueFrom": {
+                  "secretKeyRef": {
+                    "name": "secrets",
+                    "key": "jwt"
+                  }
+                }
+              },
+              {
+                "name": "DB_HOST",
+                "value": "localhost"
+              },
+              {
+                "name": "DB_NAME",
+                "value": "cahl-orpheus"
+              },
+              {
+                "name": "REDIS_HOST",
+                "value": "localhost"
+              },
+              {
+                "name": "REDIS_PORT",
+                "value": "6379"
+              }
+            ]
+          }, {
+            "name": "cahl-orpheus-redis",
+            "image": "redis:4.0"
+          }, {
+            "name": "cahl-orpheus-mongo",
+            "image": "mongo:3.0",
+            "volumeMounts": [
+              {
+                "name": "mongo-disk",
+                "mountPath": "/data/db"
+              }
+            ]
+          }
+        ],
+        "volumes": [
+          {
+            "name": "mongo-disk",
+            "gcePersistentDisk": {
+              "pdName": "cahl-orpheus-mongo-disk",
+              "fsType": "ext4"
+            }
+          }
+        ]
+      }
+    }
+  }
 }

@@ -2,9 +2,9 @@
   "kind":"Deployment",
   "apiVersion":"extensions/v1beta1",
   "metadata": {
-    "name":"cahl-orpheus-deployment",
+    "name":"cahl-orpheus-api-deployment",
     "labels": {
-      "name":"cahl-orpheus-deployment"
+      "name":"cahl-orpheus-api-deployment"
     }
   },
   "spec":{
@@ -12,14 +12,14 @@
     "template": {
       "metadata": {
         "labels": {
-          "name":"cahl-orpheus-pod"
+          "name":"cahl-orpheus-api-pod"
         }
       },
       "spec": {
         "containers": [
           {
-            "name": "cahl-orpheus-app",
-            "image": "us.gcr.io/archimedes-01201/cahl-orpheus-api:NEW_IMAGE_TAG",
+            "name": "cahl-orpheus-api-app",
+            "image": "us.gcr.io/archimedes-01201/cahl-orpheus-api:45fe8f6c9fa893ac9c34c8898ca70b3626bcd855",
             "env": [
               {
                 "name": "NODE_ENV",
@@ -49,7 +49,7 @@
               },
               {
                 "name": "DB_NAME",
-                "value": "cahl-orpheus"
+                "value": "cahl-orpheus-api"
               },
               {
                 "name": "REDIS_HOST",

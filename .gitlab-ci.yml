@@ -28,7 +28,7 @@ deploy:
     - yarn install # Install dependencies
     - yarn build # Build app
     - shopt -s extglob # Enable bash extension
-    - rm -rf !(build|Dockerfile|package.json|k8s) # Remove all files except build
+    - rm -rf !(dist|Dockerfile|package.json|k8s) # Remove all files except build
     - docker build -t cahl-orpheus-api . # Build docker image
     - docker tag cahl-orpheus-api us.gcr.io/archimedes-01201/cahl-orpheus-api:$CI_COMMIT_SHA # Tag docker image for Google Cloud
     - echo "$GOOGLE_KEY" > key.json # Google Cloud service account key

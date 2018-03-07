@@ -13,19 +13,23 @@ class ItemService extends PermissionsService {
 	 * @param {number} skip - mongo orm skip
 	 * @returns {Object[]} array of items
 	 */
-	async itemsGet({ textsearch, limit, skip, }) {
+	async getItems({ textsearch, limit, skip, }) {
 		const args = {};
 
 		if (textsearch) {
 			args.$text = { $search: textsearch };
 		}
 
-		const items = await Items.find(args, {}, {
-			limit,
-			skip
-		});
+		const items = await Items.find(args)
+			.skip(skip)
+			.limit(limit);
 
-		return items;
+		const total = await Items.count(args);
+
+		return {
+			items,
+			total,
+		};
 	}
 
 	/**
@@ -34,7 +38,7 @@ class ItemService extends PermissionsService {
 	 * @param {string} recordIdentifier - library record id
 	 * @returns {Object} array of items
 	 */
-	async itemGet({ _id, recordIdentifier }) {
+	async getItem({ _id, recordIdentifier }) {
 		const args = {};
 
 		if (!_id || !recordIdentifier) {

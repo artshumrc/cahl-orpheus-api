@@ -1,15 +1,28 @@
 import {
-	GraphQLID, GraphQLNonNull, GraphQLInt, GraphQLString
+	GraphQLID, GraphQLNonNull, GraphQLInt, GraphQLString, GraphQLList,
+	GraphQLObjectType,
 } from 'graphql';
 
 // types
 import ItemType from '../types/item';
 
+// logic
+import ItemService from '../logic/items';
 
 
 const itemQueryFields = {
 	items: {
-		type: ItemType,
+		type: new GraphQLObjectType({
+			name: 'ItemsSearchResults',
+			fields: {
+				items: {
+					type: new GraphQLList(ItemType),
+				},
+				total: {
+					type: GraphQLInt,
+				},
+			},
+		}),
 		description: 'Get library items from the cached copy of the Library Cloud API',
 		args: {
 			textsearch: {

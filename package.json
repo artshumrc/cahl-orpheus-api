@@ -105,7 +105,7 @@
     "db:clear": "babel-node scripts/run-db-clear.js",
     "db:setup": "npm run db:clear && npm run db:seed",
     "build": "babel src/ -d dist",
-    "execute": "yarn pm2 start dist--name express",
+    "execute": "yarn pm2 start dist --name express",
     "jsdoc": "jsdoc src -r -c .jsdoc.json -d docs"
   },
   "pre-commit": "lint:staged",

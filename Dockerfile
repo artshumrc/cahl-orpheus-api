@@ -6,6 +6,5 @@ WORKDIR /app
 RUN npm i -g yarn
 RUN yarn add pm2
 RUN yarn pm2 install pm2-logrotate
-RUN yarn build
 
 CMD ["yarn", "execute"]

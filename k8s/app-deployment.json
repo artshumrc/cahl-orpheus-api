@@ -19,7 +19,7 @@
         "containers": [
           {
             "name": "cahl-orpheus-app",
-            "image": "us.gcr.io/archimedes-01201/cahl-orpheus:NEW_IMAGE_TAG",
+            "image": "us.gcr.io/archimedes-01201/cahl-orpheus-api:NEW_IMAGE_TAG",
             "env": [
               {
                 "name": "NODE_ENV",

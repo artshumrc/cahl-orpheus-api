@@ -7,7 +7,8 @@ import userQueryFields from './users';
 // Application-specific queries
 import commentQueryFields from '../../modules/cahl/graphql/queries/comments';
 import storyQueryFields from '../../modules/cahl/graphql/queries/stories';
-import libraryItemQueryFields from '../../modules/library/graphql/queries/libraryItems';
+import libraryCloudQueryFields from '../../modules/library/graphql/queries/libraryCloud';
+import itemQueryFields from '../../modules/library/graphql/queries/items';
 
 
 
@@ -21,7 +22,8 @@ const RootQuery = new GraphQLObjectType({
 	fields: {
 		...commentQueryFields,
 		...storyQueryFields,
-		...libraryItemQueryFields,
+		...libraryCloudQueryFields,
+		...itemQueryFields,
 
 		// ...projectQueryFields,
 		...userQueryFields,

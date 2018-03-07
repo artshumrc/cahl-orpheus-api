@@ -5,9 +5,9 @@ import {
 } from 'graphql';
 import GraphQLJSON from 'graphql-type-json';
 
-const LibraryAPIResponseType = new GraphQLObjectType({
-	name: 'LibraryAPIResponse',
-	description: 'Response from HUL API',
+const LibraryCloudResponseType = new GraphQLObjectType({
+	name: 'LibraryCloudResponse',
+	description: 'Response from Library Cloud API',
 	fields: () => ({
 		pagination: {
 			type: GraphQLJSON,
@@ -18,4 +18,4 @@ const LibraryAPIResponseType = new GraphQLObjectType({
 	}),
 });
 
-export default LibraryAPIResponseType;
+export default LibraryCloudResponseType;

@@ -1,12 +1,13 @@
 {
-  "name": "orpheus",
+  "name": "cahl-api",
   "version": "0.0.1",
-  "description": "React application for Orphe.us digital collections",
-  "main": "server.js",
+  "description": "API for the Charlie Archive at the Harvard Library",
+  "main": "src/index.js",
   "dependencies": {
     "apollo-errors": "^1.4.0",
     "apollo-fetch": "^0.7.0",
     "aws-sdk": "^2.86.0",
+    "axios": "^0.18.0",
     "base64url": "^2.0.0",
     "body-parser": "^1.17.2",
     "check-types": "^7.1.5",
@@ -51,6 +52,7 @@
     "passport-local-mongoose": "^4.0.0",
     "pm2": "^2.8.0",
     "pre-commit": "^1.2.2",
+    "query-string": "^5.1.0",
     "react-autocomplete": "^1.5.10",
     "react-s3-uploader": "^4.2.0",
     "redis": "^2.8.0",
@@ -104,6 +106,7 @@
     "db:seed": "babel-node scripts/run-db-seed.js",
     "db:clear": "babel-node scripts/run-db-clear.js",
     "db:setup": "npm run db:clear && npm run db:seed",
+    "db:ingest": "babel-node scripts/ingest.js",
     "build": "babel src/ -d dist",
     "execute": "yarn pm2 start dist --name express",
     "jsdoc": "jsdoc src -r -c .jsdoc.json -d docs"
@@ -121,7 +124,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@gitlab.archimedes.digital:archimedes/orpheus-api.git"
+    "url": "git@gitlab.archimedes.digital:archimedes/cahl-orpheus-api.git"
   },
   "author": "Archimedes Digital",
   "license": "MIT"

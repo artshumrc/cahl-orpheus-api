@@ -3,15 +3,15 @@ import rp from 'request-promise';
 import { GraphQLID, GraphQLNonNull, GraphQLInt, GraphQLString } from 'graphql';
 
 // types
-import LibraryAPIResponseType from '../types/libraryAPIResponse';
+import LibraryCloudResponseType from '../types/libraryCloudResponse';
 
 
 // Example query: https://api.lib.harvard.edu/v2/items.json?subject_exact=Charlie%20Hebdo%20Attack,%20Paris,%20France,%202015
 
 
 const libraryItemQueryFields = {
-	HULItems: {
-		type: LibraryAPIResponseType,
+	LibraryCloudItems: {
+		type: LibraryCloudResponseType,
 		description: 'Get library items from HUL',
 		args: {
 			start: {
@@ -27,7 +27,7 @@ const libraryItemQueryFields = {
 				type: GraphQLString
 			}
 		},
-		resolve(libraryAPIResponse, { start = 0, limit = 30, search = '', sortBy = '' }, context) {
+		resolve(libraryCloudResponse, { start = 0, limit = 30, search = '', sortBy = '' }, context) {
 
 			let url = 'https://api.lib.harvard.edu/v2/items.json?';
 
@@ -62,15 +62,15 @@ const libraryItemQueryFields = {
 
 		}
 	},
-	HULItem: {
-		type: LibraryAPIResponseType,
+	LibraryCloudItem: {
+		type: LibraryCloudResponseType,
 		description: 'Get a single library item from HUL',
 		args: {
 			recordIdentifier: {
 				type: GraphQLString
 			}
 		},
-		resolve(libraryAPIResponse, { recordIdentifier = '' }, context) {
+		resolve(libraryCloudResponse, { recordIdentifier = '' }, context) {
 
 			// https://api.lib.harvard.edu/v2/items.json?recordIdentifier=8001252932_16787538
 			let url = 'https://api.lib.harvard.edu/v2/items.json?';

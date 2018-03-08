@@ -34,10 +34,13 @@ const itemQueryFields = {
 			skip: {
 				type: GraphQLInt,
 			},
+			sort: {
+				type: GraphQLString,
+			},
 		},
-		resolve(_, { textsearch, limit = 30, skip = 0, }, { token }) {
+		resolve(_, { textsearch, limit = 30, skip = 0, sort = 'title' }, { token }) {
 			const itemService = new ItemService(token);
-			const items = itemService.getItems({ textsearch, limit, skip });
+			const items = itemService.getItems({ textsearch, limit, skip, sort });
 			return items;
 		}
 	},

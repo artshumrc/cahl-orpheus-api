@@ -13,14 +13,37 @@ class ItemService extends PermissionsService {
 	 * @param {number} skip - mongo orm skip
 	 * @returns {Object[]} array of items
 	 */
-	async getItems({ textsearch, limit, skip, }) {
+	async getItems({ textsearch, limit, skip, sort }) {
 		const args = {};
+		const order = {};
 
 		if (textsearch) {
 			args.$text = { $search: textsearch };
 		}
 
+		switch (sort) {
+		case 'title':
+			order['data.titleInfo.title'] = 1;
+			break;
+
+		case 'author':
+			order['data.name.namePart'] = 1;
+			break;
+
+		case 'year_asc':
+			order['data.name.namePart'] = 1;
+			break;
+
+		case 'year_desc':
+			order['data.name.namePart'] = 1;
+			break;
+
+		default:
+			order['data.titleInfo.title'] = 1;
+		}
+
 		const items = await Items.find(args)
+			.sort(order)
 			.skip(skip)
 			.limit(limit);
 
